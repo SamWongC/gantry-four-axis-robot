@@ -1,0 +1,118 @@
+Python Host Application Command Line Debugging Procedure
+
+English translation
+
+First change to the host application directory and start Python.
+
+from scara_serial import SCARA_Serial  # Import the Python library
+
+robot = SCARA_Serial(254, 0xD1)  # Create a robot instance. 254 is the default controller address; 0xD1 is reserved.
+
+robot.get_ports()  # List available serial ports and identify the controller's port.
+robot.open_port('comx')  # Replace comx with the controller port. Returns True on successful connection.
+
+# Motor parameters in the source notes
+# Step angle: 1.8 degrees
+# Microstepping: 64
+
+# Parameters and function calls
+# Add instructions to the host command queue.
+# Example: queue one clockwise revolution of motor 2.
+arr = 1000
+pcnt = 64  # 64 microsteps
+for i in range(200):
+    robot.cmd_queue_put((arr, pcnt, 0, arr, pcnt, 1, arr, pcnt, 0, arr, pcnt, 0))
+
+# Example: queue one counterclockwise revolution of motor 3.
+arr = 1000
+pcnt = -64  # 64 microsteps, reverse direction
+for i in range(200):
+    robot.cmd_queue_put((arr, pcnt, 0, arr, pcnt, 0, arr, pcnt, 1, arr, pcnt, 0))
+
+# Synchronize the host's buffered command queue with the controller.
+robot.cmd_queue_sync()
+
+# Start executing the controller's buffered commands.
+# The motors stop automatically when the command buffer is empty.
+robot.cmd_run_start()
+
+Controller operation
+1. The controller receives commands from the host and stores them in its buffer.
+2. It executes buffered commands to drive the motors. When every command has completed and the buffer is empty, motor operation stops automatically.
+3. Receiving commands only stores them; execution starts after the host sends the start command and continues until the buffer is empty.
+4. The source notes state that there is no limit on the number of commands added on the host side. These commands remain in the host buffer until synchronization sends them to the controller.
+
+Host command format
+(arr1, pcnt1, pen1, arr2, pcnt2, pen2, arr3, pcnt3, pen3, arr4, pcnt4, pen4)
+
+Each command contains information for four motors. Indices 1, 2, 3 and 4 correspond to those motors.
+arr: auto-reload value for the controller's corresponding timer, used to determine motor speed.
+pcnt: stepper motor pulse count, referred to as pnt in the original explanatory text.
+pen: execution flag. A value of 1 drives the motor; a value of 0 makes it wait for the corresponding duration.
+
+To synchronize motion, every motor must have the same running or waiting duration within a command. The source gives the duration as (arr / 6000) * pnt and requires equal arr[i] * pnt[i] products. It describes 6000 as the controller's main clock frequency, without specifying its unit.
+
+Example from the source:
+(10000, 10, 0, 5000, 20, 1, 2500, 40, 1, 1000, 100, 0)
+
+Translation note: the original code and timing expression are preserved. Confirm actual controller timing units and the treatment of signed pulse counts before using these examples on hardware.
+
+中文原文
+
+
+#先进入文件夹目录，运行python环境
+
+from scara_serial import  SCARA_Serial     #导入python库
+
+robot = SCARA_Serial( 254,  0xD1)   # 254为控制器缺省地址， 0xD1为保留值  创建机械臂实例
+
+robot.get_ports()    # 打印系统可用串口，找到机械臂控制器的串口
+
+robot.open_port('comx')   # comx 为机械臂控制器对应的串口，打开串口成功返回 True
+
+ 
+
+# 电机的控制参数
+# 电机步距角1.8°
+# 细分 64
+
+# 参数
+# 函数调用
+#向上位机缓冲区命令队列添加指令
+#例：添加二号电机顺时针1圈指令到命令队列
+arr = 1000
+pcnt =   64   # 64细分
+for i in range(200):
+    robot.cmd_queue_put((arr, pcnt, 0, arr, pcnt, 1, arr, pcnt, 0, arr, pcnt, 0))
+
+
+#例：添加三号电机逆时针1圈指令到命令队列
+arr = 1000
+pcnt =   -64   # 64细分
+for i in range(200):
+    robot.cmd_queue_put((arr, pcnt, 0, arr, pcnt, 0, arr, pcnt, 1, arr, pcnt, 0))
+
+
+# 同步上位机缓存区指令到控制器
+robot.cmd_queue_sync()
+
+# 启动控制器缓冲区命令运行
+# 缓冲区命令全部运行完毕，缓冲区空时自动停止电机运行
+robot.cmd_run_start()
+
+
+# 控制器的工作原理
+1. 控制器从上位机接收控制指令，存放到缓冲区
+2. 控制器执行缓冲区种指令，控制电机运行；缓冲区中指令全部执行完毕后，控制器自动停止运行
+3. 控制器从上位机接收指令存放于缓冲区中，并不执行，只有接收到上位机的开始执行指令，才执行缓冲区中的指令，直到缓冲区空
+4. 上位机添加指令时没有指令数量限制，这些指令是保存于上位机的缓冲区中，当执行同步指令命令时，才会将这些指令发送到控制器
+#上位机指令原理
+(arr1, pcnt1, pen1, arr2, pcnt2, pen2, arr3, pcnt3, pen3, arr4, pcnt4, pen4)
+#一条指令包含四个电机信息
+#1，2，3，4对应四个电机
+#arr为对控制器对应定时器自动重装载值 通过arr可计算电机运行速度 
+#pnt为步进电机脉冲数
+#pen为运行标志位，当pen为1时电机运行，当pen为0时电机等待对应的时间
+#为实现机械臂同步性，严格控制每条指令每个电机运行时间或者电机等待时间相同，电机运行时间或等待时间为  （arr/6000）* pnt   ， 也就是每一条指令的arr[i]*pnt[i]要相同。  其中6000为控制器主频频率
+#例（10000，10，0，5000，20，1，2500，40，1，1000，100，0）
+  

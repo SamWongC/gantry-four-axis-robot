@@ -1,0 +1,5 @@
+# Inferred from imports; versions have not been validated on hardware.
+PySide6
+pyserial
+numpy
+matplotlib
