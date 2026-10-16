@@ -2,6 +2,16 @@
 
 This industrial internship project brings together mechanical design, manufacturing files, a Python host application, calculation documents and a demonstration video.
 
+## Prototype and mechanical layout
+
+| Physical prototype | CAD assembly |
+| --- | --- |
+| ![Archived prototype photograph](docs/images/robot-prototype.jpeg) | ![Archived CAD assembly](docs/images/robot-cad.png) |
+
+Images are extracted from the archived project report. [Watch/download the demonstration](media/完整视频.mp4) · [Read the report](docs/report.docx) · [Explore the host software](software/README.md).
+
+The project connects mechanical layout, part manufacturing, assembly and a serial host application. The photograph and video document a historical prototype; no positioning-accuracy or repeatability benchmark is claimed here.
+
 ## Start here
 
 - **Design and development:** open the [project documents](docs/), then read the group presentation or individual internship report.
@@ -10,7 +20,7 @@ This industrial internship project brings together mechanical design, manufactur
 - **Control software:** use the [software guide](software/README.md) to find the GUI and serial-control sources.
 - **Manufacturing:** `manufacturing/板材/` contains DXF files and `manufacturing/打印件/` contains STL files. Original thickness and quantity information remains in the filenames.
 
-This repository organizes a historical project. Software and hardware have not been retested together, and SolidWorks assembly references have not been verified. It includes group work and host-application code whose sources still need confirmation. Individual contributions and third-party sources need further documentation. Keep the initial repository private.
+This repository organizes a historical project. Software and hardware have not been retested together, and SolidWorks assembly references have not been verified. It includes group work and host-application code whose sources still need confirmation. Third-party code provenance and reuse terms have not been fully documented; publication of this archive does not assign blanket authorship or licensing rights.
 
 ## Contents
 
@@ -56,6 +66,8 @@ python -m venv .venv
 
 生产实习中的四轴机械臂项目，集中保存机械设计、制造文件、Python 上位机、计算资料和演示视频。
 
+实物照片与 CAD 总装预览见上方，均提取自归档报告；演示视频入口已置于首页。它们记录历史样机，不代表已验证定位精度或重复精度。
+
 ## 从这里开始
 
 - **了解设计与过程**：查看 [项目文档](docs/)，选择小组汇报或个人实习报告。
@@ -64,7 +76,7 @@ python -m venv .venv
 - **查看控制程序**：从 [软件说明](software/README.md) 进入 GUI 与串口控制源码。
 - **制作零件**：`manufacturing/板材/` 提供 DXF，`manufacturing/打印件/` 提供 STL；文件名中保留原有厚度与数量信息。
 
-这是历史项目的整理版本。软件和硬件尚未重新联调，SolidWorks 装配引用尚未验证。项目包含小组成果及来源待确认的上位机代码，个人分工与第三方来源需进一步补充；建议先以私有仓库保存。
+这是历史项目的整理版本。软件和硬件尚未重新联调，SolidWorks 装配引用尚未验证。项目包含小组成果及来源待确认的上位机代码，第三方代码来源及复用条款尚未完整核实，公开归档不代表对全部材料统一主张作者身份或授予许可证。
 
 ## 内容
 
@@ -100,3 +112,4 @@ python -m venv .venv
 ```
 
 `scara_host_app.py` 是含 GUI 启动代码的入口；`main.py` 是历史调试脚本，不作为启动入口。控制器型号、串口参数、接线、限位和回零步骤需依据原始调试说明及实物补充确认，当前仓库不保证直接连接设备即可使用。
+
